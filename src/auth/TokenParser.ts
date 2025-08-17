@@ -1,9 +1,11 @@
 export class TokenParser {
-  constructor(exports) {
+  private exports: any;
+
+  constructor(exports: any) {
     this.exports = exports;
   }
 
-  parseTokenResponse(tokenResponse) {
+  parseTokenResponse(tokenResponse: any) {
     const { salt1, salt2, salt3, salt4, salt5, accessToken, refreshToken } = tokenResponse;
 
     const n = this.exports.cdx(salt1, salt2, salt3, salt4, salt5);

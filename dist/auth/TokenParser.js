@@ -1,5 +1,4 @@
 export class TokenParser {
-    exports;
     constructor(exports) {
         this.exports = exports;
     }

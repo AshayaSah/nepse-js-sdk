@@ -3,7 +3,7 @@ import path from "path";
 import { TokenParser } from "./TokenParser.js";
 
 async function loadWasm() {
-  const wasmPath = path.resolve("./nepse.wasm");
+  const wasmPath = path.resolve("./src/auth/nepse.wasm");
   const buffer = fs.readFileSync(wasmPath);
   const module = await WebAssembly.instantiate(new Uint8Array(buffer));
   return module.instance.exports;
