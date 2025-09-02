@@ -1,6 +1,6 @@
-import axios from "axios";
 import https from "https";
 import TokenParser from "./TokenParser.js";
+import axios from "../../node_modules/axios/index.js";
 
 const agent = new https.Agent({
   rejectUnauthorized: false, // same as Python's verify=False

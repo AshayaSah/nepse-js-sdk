@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/auth/payloadparser.ts","./src/auth/tokenparser.ts","./src/auth/index.ts","./src/utils/apis.ts"],"version":"5.9.2"}
+{"root":["./src/index.ts","./src/auth/payloadparser.ts","./src/auth/tokenhandler.ts","./src/auth/tokenparser.ts","./src/auth/index.ts","./src/utils/apis.ts"],"version":"5.9.2"}
