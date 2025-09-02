@@ -1,50 +1,24 @@
-interface TokenResponse {
+import TokenParser from "./TokenParser.js";
+export interface TokenResponse {
+    serverTime: number;
+    salt: string;
     accessToken: string;
+    tokenType: string;
     refreshToken: string;
     salt1: number;
     salt2: number;
     salt3: number;
     salt4: number;
     salt5: number;
+    isDisplayActive: boolean;
+    popupDocFor: string;
 }
-declare class TokenParser {
-    private instance;
-    private isInitialized;
-    constructor();
-    private initializeWasm;
-    parseTokenResponse(tokenResponse: TokenResponse): [string, string];
-}
-declare class PayloadParser {
-    private dummyData;
-    private defaultHeaders;
-    constructor();
-    private getApiEndpoint;
-    returnPayload(accessTokenValue: [string, TokenResponse], which?: string, apiKey?: string, indexId?: string): Promise<number>;
-    getApiConfig(apiKey: string): {
-        api: string;
-        method: string;
-    };
-    getAvailableApis(): string[];
-    buildApiUrl(apiKey: string, indexId?: string): string;
-}
-declare class NepseClient {
+export declare class TokenService {
+    private tokenUrl;
+    private tokenMethod;
+    private headers;
     private tokenParser;
-    private payloadParser;
-    private currentTokens;
-    constructor();
-    authenticate(): Promise<[string, TokenResponse]>;
-    makeApiCall(apiKey: string, indexId?: string, which?: string): Promise<any>;
-    getTodayPrice(which?: string): Promise<any>;
-    getMarketSummary(): Promise<any>;
-    getTopGainers(): Promise<any>;
-    getTopLosers(): Promise<any>;
-    getSectorwiseSummary(): Promise<any>;
-    getIndexHistory(indexId: string): Promise<any>;
-    getStockLive(): Promise<any>;
-    getIndicesLive(): Promise<any>;
-    getAvailableApis(): string[];
+    constructor(tokenUrl: string, tokenMethod: "GET" | "POST", headers: Record<string, string>, tokenParser: TokenParser);
+    getValidToken(): Promise<[string, any]>;
 }
-export { TokenParser, PayloadParser, NepseClient };
-declare const nepseClient: NepseClient;
-export default nepseClient;
 //# sourceMappingURL=index.d.ts.map
