@@ -12,15 +12,14 @@ async function main() {
     { "User-Agent": "Mozilla/5.0" }, // headers
     payloadParser, tokenParser);
     try {
-        const [token, fullResp] = await handler.getValidToken();
-        console.log("Access Token:", token);
-        console.log("Full Response:", fullResp);
-        // const api = ROOT_URL + api_dict.marketopen_api.api;
-        // const method = api_dict.marketopen_api.method;
-        // const accessToken = await handler.getValidToken();
-        // const response = await handler.returnData(api, accessToken, method)
-        // const data = response.json();
-        // console.log("The data", data);
+        // const [token, fullResp] = await handler.getValidToken();
+        // console.log("Access Token:", token);
+        // console.log("Full Response:", fullResp);
+        const api = ROOT_URL + api_dict.marketopen_api.api;
+        const method = api_dict.marketopen_api.method;
+        const accessToken = await handler.getValidToken();
+        const response = await handler.returnData(api, accessToken, method);
+        console.log("The data", response);
     }
     catch (err) {
         console.error("Error fetching token:", err);

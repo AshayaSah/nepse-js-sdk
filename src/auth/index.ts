@@ -20,19 +20,18 @@ async function main() {
   );
 
   try {
-    const [token, fullResp] = await handler.getValidToken();
-    console.log("Access Token:", token);
-    console.log("Full Response:", fullResp);
+    // const [token, fullResp] = await handler.getValidToken();
+    // console.log("Access Token:", token);
+    // console.log("Full Response:", fullResp);
 
 
-    // const api = ROOT_URL + api_dict.marketopen_api.api;
-    // const method = api_dict.marketopen_api.method;
+    const api = ROOT_URL + api_dict.marketopen_api.api;
+    const method = api_dict.marketopen_api.method;
 
-    // const accessToken = await handler.getValidToken();
-    // const response = await handler.returnData(api, accessToken, method)
-    // const data = response.json();
+    const accessToken = await handler.getValidToken();
+    const response = await handler.returnData(api, accessToken, method)
 
-    // console.log("The data", data);
+    console.log("The data", response);
     
   } catch (err) {
     console.error("Error fetching token:", err);
