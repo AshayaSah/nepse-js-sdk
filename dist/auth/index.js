@@ -1,56 +1,26 @@
-import axios from "axios";
-import https from "https";
 import TokenParser from "./TokenParser.js";
-const agent = new https.Agent({
-    rejectUnauthorized: false, // same as Python's verify=False
-});
-export class TokenService {
-    constructor(tokenUrl, tokenMethod, headers, tokenParser) {
-        this.tokenUrl = tokenUrl;
-        this.tokenMethod = tokenMethod;
-        this.headers = headers;
-        this.tokenParser = tokenParser;
-    }
-    async getValidToken() {
-        try {
-            const config = {
-                url: this.tokenUrl,
-                method: this.tokenMethod,
-                headers: this.headers,
-                httpsAgent: agent,
-            };
-            const response = await axios.request(config);
-            const rawTokenResponse = response.data;
-            console.log("Token Response: ", rawTokenResponse);
-            // Create processed response with converted salts
-            const tokenResponse = {
-                ...rawTokenResponse,
-                salt1: parseInt(rawTokenResponse.salt1, 10),
-                salt2: parseInt(rawTokenResponse.salt2, 10),
-                salt3: parseInt(rawTokenResponse.salt3, 10),
-                salt4: parseInt(rawTokenResponse.salt4, 10),
-                salt5: parseInt(rawTokenResponse.salt5, 10),
-            };
-            const parsed = this.tokenParser.parseTokenResponse(tokenResponse);
-            console.log("\n\n\nParsed: ", parsed, "\n\n\n");
-            return [parsed[0], tokenResponse];
-        }
-        catch (err) {
-            console.error("Error fetching token:", err);
-            throw err;
-        }
-    }
-}
+import { TokenHandler } from "./TokenHandler.js";
+import { PayloadParser } from "./PayloadParser.js";
+import api_dict from "../utils/apis.js";
+const ROOT_URL = "https://www.nepalstock.com";
 async function main() {
     const tokenParser = new TokenParser();
-    const handler = new TokenService("https://nepalstock.com.np/api/authenticate/prove", // tokenUrl
+    const payloadParser = new PayloadParser();
+    setTimeout(() => { }, 2000);
+    const handler = new TokenHandler("https://nepalstock.com.np/api/authenticate/prove", // tokenUrl
     "GET", // tokenMethod
     { "User-Agent": "Mozilla/5.0" }, // headers
-    tokenParser);
+    payloadParser, tokenParser);
     try {
         const [token, fullResp] = await handler.getValidToken();
         console.log("Access Token:", token);
         console.log("Full Response:", fullResp);
+        // const api = ROOT_URL + api_dict.marketopen_api.api;
+        // const method = api_dict.marketopen_api.method;
+        // const accessToken = await handler.getValidToken();
+        // const response = await handler.returnData(api, accessToken, method)
+        // const data = response.json();
+        // console.log("The data", data);
     }
     catch (err) {
         console.error("Error fetching token:", err);

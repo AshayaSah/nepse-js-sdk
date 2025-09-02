@@ -1,6 +1,11 @@
+import axios from "../../node_modules/axios/index.js";
 import api_dict, {} from "../utils/apis.js";
+import https from "https";
 const ROOT_URL = "https://www.nepalstock.com";
-class PayloadParser {
+const agent = new https.Agent({
+    rejectUnauthorized: false, // same as Python's verify=False
+});
+export class PayloadParser {
     constructor(api_dic) {
         this.dummyData = [
             147, 117, 239, 143, 157, 312, 161, 612, 512, 804, 411, 527, 170, 511, 421,
@@ -28,6 +33,56 @@ class PayloadParser {
             "sec-gpc": "1",
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
         };
+    }
+    async returnPayload(accessTokenValue, which) {
+        const headers = {
+            'Authorization': `Salter ${accessTokenValue[0]}`,
+            ...this.headers
+        };
+        const config = {
+            method: this.method,
+            url: this.url,
+            headers: headers,
+            data: this.payload,
+            httpsAgent: agent
+        };
+        try {
+            const response = await axios.request(config);
+            const responseData = response.data;
+            const givenId = responseData.id;
+            const today = new Date().getDate(); // equivalent to datetime.now().day
+            let payloadId = (this.dummyData[givenId] ?? 0) + givenId + 2 * today;
+            if (which === 'stock-live') {
+                return payloadId;
+            }
+            let indexValue;
+            if (which === 'sector-live') {
+                if (payloadId % 10 < 5) {
+                    indexValue = 3;
+                }
+                else {
+                    indexValue = 1;
+                }
+            }
+            else {
+                if (payloadId % 10 < 5) {
+                    indexValue = 1;
+                }
+                else {
+                    indexValue = 3;
+                }
+            }
+            const saltKey1 = `salt${indexValue + 1}`;
+            const saltKey2 = `salt${indexValue}`;
+            payloadId = payloadId +
+                accessTokenValue[1][saltKey1] * today -
+                accessTokenValue[1][saltKey2];
+            return payloadId;
+        }
+        catch (error) {
+            console.error("Error in returnPayload:", error);
+            throw error;
+        }
     }
 }
 //# sourceMappingURL=PayloadParser.js.map

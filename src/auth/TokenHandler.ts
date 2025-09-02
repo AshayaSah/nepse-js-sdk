@@ -1,6 +1,7 @@
-import axios from "axios";
 import https from "https";
 import TokenParser from "./TokenParser.js";
+import axios from "../../node_modules/axios/index.js";
+import { PayloadParser } from "./PayloadParser.js";
 
 const agent = new https.Agent({
   rejectUnauthorized: false, // same as Python's verify=False
@@ -38,23 +39,108 @@ export interface TokenResponse {
   popupDocFor: string;
 }
 
+interface RequestApiOptions {
+  url: string;
+  accessToken: AccessTokenValue // Assuming accessToken is a single-item array as in the Python code
+  method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH"
+  whichPayload?: string | null;
+  queryString?: Record<string, string> | null;
+  payload?: any; // Flexible type for payload, can be refined based on use case
+  headers?: Headers;
+}
+
+// Type for access_token_value parameter [token, tokenResponse]
+type AccessTokenValue = [string, TokenResponse];
+
+interface Headers {
+  [key: string]: string;
+}
+
+interface ParserObject {
+  returnPayload: (accessToken: [string], which?: string | null) => any;
+}
 
 export class TokenHandler {
   private tokenUrl: string;
   private tokenMethod: "GET" | "POST";
   private headers: Record<string, string>;
   private tokenParser: TokenParser;
+  private payloadParser: PayloadParser;
 
   constructor(
     tokenUrl: string,
     tokenMethod: "GET" | "POST",
     headers: Record<string, string>,
+    payloadParser: PayloadParser,
     tokenParser: TokenParser
   ) {
     this.tokenUrl = tokenUrl;
     this.tokenMethod = tokenMethod;
-    this.headers = headers;
+    this.headers = {
+            'Host': 'www.nepalstock.com',
+            'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0',
+            'Accept': 'application/json, text/plain, */*',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+            'Referer': 'https://www.nepalstock.com/',
+            'Pragma': 'no-cache',
+            'Cache-Control': 'no-cache',
+            'TE': 'Trailers',
+        };
+    this.payloadParser = payloadParser;
     this.tokenParser = tokenParser;
+  }
+
+  async requestApi({
+    url,
+    accessToken,
+    method = 'GET',
+    whichPayload = null,
+    queryString = null,
+    payload = null,
+  }: RequestApiOptions): Promise<Response> {
+    /**
+     * This function returns the data from the requested URL in JSON format.
+     *
+     * @param url - The URL of the API to get data from.
+     * @param accessToken - The access token generated from getValidToken function.
+     * @param method - Optional HTTP method ('GET' or 'POST'). Defaults to 'GET'.
+     * @param whichPayload - Optional parameter for payload generation.
+     * @param queryString - Optional query string parameters.
+     * @param payload - Optional payload for the request.
+     * @returns A Promise resolving to the fetch Response object.
+     * @throws Error if the request fails.
+     */
+    try {
+      // Prepare headers
+      const requestHeaders: Headers = {
+        Authorization: `Salter ${accessToken[0]}`,
+        ...this.headers,
+      };
+
+      // Prepare payload
+      const requestPayload =
+        payload ?? this.payloadParser.returnPayload(accessToken, whichPayload);
+
+      // Send the request
+      const config = {
+        method: method,
+        url: url,
+        headers: requestHeaders,
+        json: requestPayload,
+        params: queryString,
+        httpsAgent: agent,
+      };
+
+      const response = await axios.request(config);
+      const reqResponse = response.data;
+      console.log(reqResponse)
+
+      return reqResponse;
+    } catch (error) {
+      throw new Error(`Error sending request: ${error}`);
+    }
   }
 
   async getValidToken(): Promise<[string, any]> {
@@ -89,4 +175,34 @@ export class TokenHandler {
       throw err;
     }
   }
+
+  async returnData(
+    url: string,
+    accessToken: AccessTokenValue,
+    method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
+    whichPayload: string | null = null,
+    queryString: Record<string, string> | null = null,
+    payload: any = null
+  ): Promise<Response> {
+    /**
+     * Calls requestApi with the provided parameters to fetch data from the API.
+     *
+     * @param url - The URL of the API to get data from.
+     * @param accessToken - The access token generated from getValidToken function.
+     * @param method - Optional HTTP method ('GET' or 'POST'). Defaults to 'GET'.
+     * @param whichPayload - Optional parameter for payload generation.
+     * @param queryString - Optional query string parameters.
+     * @param payload - Optional payload for the request.
+     * @returns A Promise resolving to the fetch Response object.
+     */
+    return this.requestApi({
+      url,
+      accessToken,
+      method,
+      whichPayload,
+      queryString,
+      payload,
+    });
+  }
+
 }
