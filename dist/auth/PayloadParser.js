@@ -50,7 +50,9 @@ export class PayloadParser {
             const response = await axios.request(config);
             const responseData = response.data;
             const givenId = responseData.id;
+            console.log("\n\n\nThe Payload ID: ", givenId, "\n\n\n");
             const today = new Date().getDate(); // equivalent to datetime.now().day
+            console.log("\n\n\nThe payloadId from DummyData: ", this.dummyData[givenId], "\n\n\n");
             let payloadId = (this.dummyData[givenId] ?? 0) + givenId + 2 * today;
             if (which === 'stock-live') {
                 return payloadId;

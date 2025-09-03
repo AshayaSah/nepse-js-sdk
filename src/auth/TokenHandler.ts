@@ -56,10 +56,6 @@ interface Headers {
   [key: string]: string;
 }
 
-interface ParserObject {
-  returnPayload: (accessToken: [string], which?: string | null) => any;
-}
-
 export class TokenHandler {
   private tokenUrl: string;
   private tokenMethod: "GET" | "POST";
@@ -109,8 +105,13 @@ export class TokenHandler {
       };
 
       // Prepare payload
-      const requestPayload =
-        payload ?? this.payloadParser.returnPayload(accessToken, whichPayload);
+      const requestPayload = payload ?? await this.payloadParser.returnPayload(accessToken, whichPayload);
+
+      console.log("\n\n\n The Request Payload: ", requestPayload, "\n\n\n");
+
+      const date_ = new Date('2024-01-15').toISOString().split('T')[0];
+
+      const  queryString = {"page": "0", "size": "500", "businessDate": date_}
 
       // Send the request
       const config = {

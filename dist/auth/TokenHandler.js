@@ -33,7 +33,10 @@ export class TokenHandler {
                 ...this.headers,
             };
             // Prepare payload
-            const requestPayload = payload ?? this.payloadParser.returnPayload(accessToken, whichPayload);
+            const requestPayload = payload ?? await this.payloadParser.returnPayload(accessToken, whichPayload);
+            console.log("\n\n\n The Request Payload: ", requestPayload, "\n\n\n");
+            const date_ = new Date('2024-01-15').toISOString().split('T')[0];
+            const queryString = { "page": "0", "size": "500", "businessDate": date_ };
             // Send the request
             const config = {
                 method: method,

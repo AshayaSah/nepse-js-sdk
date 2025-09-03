@@ -23,8 +23,15 @@ async function main() {
     // const [token, fullResp] = await handler.getValidToken();
     // console.log("Access Token:", token);
     // console.log("Full Response:", fullResp);
+    isMarketOpen(handler);
 
+    
+  } catch (err) {
+    console.error("Error fetching token:", err);
+  }
+}
 
+async function isMarketOpen(handler: TokenHandler) {
     const api = ROOT_URL + api_dict.marketopen_api.api;
     const method = api_dict.marketopen_api.method;
 
@@ -32,10 +39,6 @@ async function main() {
     const response = await handler.returnData(api, accessToken, method)
 
     console.log("The data", response);
-    
-  } catch (err) {
-    console.error("Error fetching token:", err);
-  }
 }
 
 main();
