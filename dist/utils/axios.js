@@ -6,16 +6,19 @@ export function getAxiosClient(appURL, tokenParser, tokenType) {
         baseURL: appURL,
         withCredentials: true,
     });
+    let AccessToken;
     // Add request interceptor to dynamically set access token and auth token
     axiosInstance.interceptors.request.use(async (config) => {
-        const headers = await getRequestHeaders(tokenParser, tokenType);
-        config.headers = {
-            ...config.headers,
-            ...headers,
-        };
+        const { headers, accessToken } = await getRequestHeaders(tokenParser, tokenType);
+        console.log(accessToken);
+        AccessToken = accessToken;
+        Object.assign(config.headers, headers);
         return config;
     });
-    return axiosInstance;
+    return {
+        axiosInstance,
+        getAccessToken: () => AccessToken,
+    };
 }
 export async function getRequestHeaders(tokenParser, tokenType) {
     // Custom Header
@@ -38,6 +41,6 @@ export async function getRequestHeaders(tokenParser, tokenType) {
     const accessToken = await accessTokenParser.getValidToken();
     console.log("\n\n\nThe Access Token: ", accessToken, "\n\n\n");
     headers.Authorization = `${tokenType} ${accessToken[0]}`;
-    return headers;
+    return { headers, accessToken };
 }
 //# sourceMappingURL=axios.js.map

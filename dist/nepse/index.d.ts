@@ -1,6 +1,6 @@
 import type { AxiosInstance } from "../../node_modules/axios/index";
 import { Apihandler } from "../api/ApiHandler.js";
-import { PayloadParser } from "../auth/PayloadParser.js";
+import { PayloadParser, type AccessTokenValue } from "../auth/PayloadParser.js";
 import TokenParser from "../auth/TokenParser.js";
 export interface TokenResponse {
     serverTime: number;
@@ -20,6 +20,7 @@ export declare class Nepse {
     /**  Nepse URL */
     readonly url: string;
     readonly axios: AxiosInstance;
+    readonly accessToken: AccessTokenValue;
     readonly tokenParser: TokenParser;
     readonly payloadParser: PayloadParser;
     constructor();

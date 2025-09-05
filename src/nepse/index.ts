@@ -1,6 +1,6 @@
 import type { AxiosInstance } from "../../node_modules/axios/index";
 import { Apihandler } from "../api/ApiHandler.js";
-import { PayloadParser } from "../auth/PayloadParser.js";
+import { PayloadParser, type AccessTokenValue } from "../auth/PayloadParser.js";
 import TokenParser from "../auth/TokenParser.js";
 import { getAxiosClient } from "../utils/axios.js";
 
@@ -29,6 +29,8 @@ export class Nepse {
   // Axios Instance
   readonly axios: AxiosInstance;
 
+  readonly accessToken: AccessTokenValue;
+
   //   Initializing Token Parser
   readonly tokenParser = new TokenParser();
 
@@ -37,10 +39,21 @@ export class Nepse {
 
   constructor() {
     this.url = ROOT_URL;
-    this.axios = getAxiosClient(ROOT_URL, this.tokenParser, TOKEN_TYPE);
+    const { axiosInstance, getAccessToken } = getAxiosClient(
+      ROOT_URL,
+      this.tokenParser,
+      TOKEN_TYPE
+    );
+    this.axios = axiosInstance;
+    this.accessToken = getAccessToken;
   }
 
   api() {
-    return new Apihandler(ROOT_URL, this.payloadParser, this.axios);
+    return new Apihandler(
+      ROOT_URL,
+      this.payloadParser,
+      this.axios,
+      this.accessToken
+    );
   }
 }

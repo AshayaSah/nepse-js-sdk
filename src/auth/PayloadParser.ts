@@ -21,7 +21,7 @@ interface TokenResponse {
 }
 
 // Type for access_token_value parameter [token, tokenResponse]
-type AccessTokenValue = [string, TokenResponse];
+export type AccessTokenValue = [string, TokenResponse];
 
 // Interface for the API response that contains an id
 interface PayloadResponse {
@@ -32,7 +32,6 @@ interface PayloadResponse {
 const agent = new https.Agent({
   rejectUnauthorized: false, // same as Python's verify=False
 });
-
 
 export class PayloadParser {
   private dummyData: number[];
@@ -49,17 +48,17 @@ export class PayloadParser {
       745, 152, 863, 134, 211, 142, 564, 375, 793, 212, 153, 138, 153, 648, 611,
       151, 649, 318, 143, 117, 756, 119, 141, 717, 113, 112, 146, 162, 660, 693,
       261, 362, 354, 251, 641, 157, 178, 631, 192, 734, 445, 192, 883, 187, 122,
-      591, 731, 852, 384, 565, 596, 451, 772, 624, 691
+      591, 731, 852, 384, 565, 596, 451, 772, 624, 691,
     ];
 
     this.url = `${ROOT_URL}${api_dict.marketopen_api.api}`;
     this.method = api_dict.marketopen_api.method;
     this.payload = {};
     this.headers = {
-      "authority": "www.nepalstock.com",
-      "accept": "application/json, text/plain, */*",
+      authority: "www.nepalstock.com",
+      accept: "application/json, text/plain, */*",
       "accept-language": "en-US,en;q=0.5",
-      "referer": "https://www.nepalstock.com",
+      referer: "https://www.nepalstock.com",
       "sec-ch-ua": '"Not_A Brand";v="99", "Brave";v="109", "Chromium";v="109"',
       "sec-ch-ua-mobile": "?0",
       "sec-ch-ua-platform": '"Windows"',
@@ -74,20 +73,20 @@ export class PayloadParser {
 
   async returnPayload(
     accessTokenValue: AccessTokenValue,
-    which?: 'stock-live' | 'sector-live' | string | null
+    which?: "stock-live" | "sector-live" | string | null
   ): Promise<number> {
     const headers = {
-      'Authorization': `Salter ${accessTokenValue[0]}`,
-      ...this.headers
+      Authorization: `Salter ${accessTokenValue[0]}`,
+      ...this.headers,
     };
 
     const config = {
-        method: this.method as any,
-        url: this.url,
-        headers: headers, 
-        data: this.payload,
-        httpsAgent: agent
-      };
+      method: this.method as any,
+      url: this.url,
+      headers: headers,
+      data: this.payload,
+      httpsAgent: agent,
+    };
 
     try {
       const response = await axios.request(config);
@@ -98,17 +97,21 @@ export class PayloadParser {
 
       const today = new Date().getDate(); // equivalent to datetime.now().day
 
-      console.log("\n\n\nThe payloadId from DummyData: ", this.dummyData[givenId], "\n\n\n")
+      console.log(
+        "\n\n\nThe payloadId from DummyData: ",
+        this.dummyData[givenId],
+        "\n\n\n"
+      );
 
       let payloadId = (this.dummyData[givenId] ?? 0) + givenId + 2 * today;
 
-      if (which === 'stock-live') {
+      if (which === "stock-live") {
         return payloadId;
       }
 
       let indexValue: number;
-      
-      if (which === 'sector-live') {
+
+      if (which === "sector-live") {
         if (payloadId % 10 < 5) {
           indexValue = 3;
         } else {
@@ -122,19 +125,24 @@ export class PayloadParser {
         }
       }
 
-      const saltKey1 = `salt${indexValue + 1}` as keyof Pick<TokenResponse, 'salt1' | 'salt2' | 'salt3' | 'salt4' | 'salt5'>;
-      const saltKey2 = `salt${indexValue}` as keyof Pick<TokenResponse, 'salt1' | 'salt2' | 'salt3' | 'salt4' | 'salt5'>;
+      const saltKey1 = `salt${indexValue + 1}` as keyof Pick<
+        TokenResponse,
+        "salt1" | "salt2" | "salt3" | "salt4" | "salt5"
+      >;
+      const saltKey2 = `salt${indexValue}` as keyof Pick<
+        TokenResponse,
+        "salt1" | "salt2" | "salt3" | "salt4" | "salt5"
+      >;
 
-      payloadId = payloadId + 
-        accessTokenValue[1][saltKey1] * today - 
+      payloadId =
+        payloadId +
+        accessTokenValue[1][saltKey1] * today -
         accessTokenValue[1][saltKey2];
 
       return payloadId;
-
     } catch (error) {
       console.error("Error in returnPayload:", error);
       throw error;
     }
   }
 }
-

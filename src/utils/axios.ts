@@ -4,6 +4,7 @@ import axios, {
 } from "../../node_modules/axios/index.js";
 import TokenParser from "../auth/TokenParser.js";
 import { AccessTokenHandler } from "../api/AccessTokenHandler.js";
+import type { AccessTokenValue } from "../auth/PayloadParser.js";
 
 export interface TokenResponse {
   serverTime: number;
@@ -28,7 +29,7 @@ interface RequestHeadersResponse {
 
 export interface getAxiosClientResponse {
   axiosInstance: AxiosInstance;
-  accessToken: [string, TokenResponse];
+  AccessToken: AccessTokenValue;
 }
 
 export function getAxiosClient(
@@ -41,17 +42,22 @@ export function getAxiosClient(
     withCredentials: true,
   });
 
+  let AccessToken!: AccessTokenValue;
+
   // Add request interceptor to dynamically set access token and auth token
   axiosInstance.interceptors.request.use(async (config) => {
     const { headers, accessToken } = await getRequestHeaders(
       tokenParser,
       tokenType
     );
+
+    console.log(accessToken);
+    AccessToken = accessToken;
     Object.assign(config.headers, headers);
     return config;
   });
 
-  return { axiosInstance, accessToken };
+  return { axiosInstance, AccessToken };
 }
 
 export async function getRequestHeaders(

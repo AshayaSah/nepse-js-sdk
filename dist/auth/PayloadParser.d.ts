@@ -13,7 +13,7 @@ interface TokenResponse {
     isDisplayActive: boolean;
     popupDocFor: string;
 }
-type AccessTokenValue = [string, TokenResponse];
+export type AccessTokenValue = [string, TokenResponse];
 export declare class PayloadParser {
     private dummyData;
     private url;
@@ -21,7 +21,7 @@ export declare class PayloadParser {
     private payload;
     private headers;
     constructor(api_dic?: ApiList);
-    returnPayload(accessTokenValue: AccessTokenValue, which?: 'stock-live' | 'sector-live' | string | null): Promise<number>;
+    returnPayload(accessTokenValue: AccessTokenValue, which?: "stock-live" | "sector-live" | string | null): Promise<number>;
 }
 export {};
 //# sourceMappingURL=PayloadParser.d.ts.map
