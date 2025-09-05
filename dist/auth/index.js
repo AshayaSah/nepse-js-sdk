@@ -7,7 +7,7 @@ import { Agent, fetch } from "../../node_modules/undici/index.js";
 // import fetch from "node-fetch"
 const agent = new Agent({
     connect: {
-        rejectUnauthorized: false, // ⚠️ disables SSL validation
+        rejectUnauthorized: false,
     },
 });
 const ROOT_URL = "https://www.nepalstock.com";
