@@ -1,5 +1,11 @@
 import TokenParser from "./TokenParser.js";
 import { PayloadParser } from "./PayloadParser.js";
+interface QueryString {
+    page?: string;
+    size?: string;
+    businessDate?: string | null;
+    nDays?: number;
+}
 export interface TokenResponse {
     serverTime: number;
     salt: string;
@@ -19,7 +25,7 @@ interface RequestApiOptions {
     accessToken: AccessTokenValue;
     method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
     whichPayload?: string | null;
-    queryString?: Record<string, string> | null;
+    queryString?: QueryString;
     payload?: any;
     headers?: Headers;
 }
@@ -36,7 +42,7 @@ export declare class TokenHandler {
     constructor(tokenUrl: string, tokenMethod: "GET" | "POST", headers: Record<string, string>, payloadParser: PayloadParser, tokenParser: TokenParser);
     requestApi({ url, accessToken, method, whichPayload, queryString, payload, }: RequestApiOptions): Promise<Response>;
     getValidToken(): Promise<[string, any]>;
-    returnData(url: string, accessToken: AccessTokenValue, method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH", whichPayload?: string | null, queryString?: Record<string, string> | null, payload?: any): Promise<Response>;
+    returnData(url: string, accessToken: AccessTokenValue, method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH", whichPayload: string | null | undefined, queryString: QueryString, payload?: any): Promise<Response>;
 }
 export {};
 //# sourceMappingURL=TokenHandler.d.ts.map

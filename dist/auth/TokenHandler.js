@@ -13,7 +13,7 @@ export class TokenHandler {
         this.payloadParser = payloadParser;
         this.tokenParser = tokenParser;
     }
-    async requestApi({ url, accessToken, method = 'GET', whichPayload = null, queryString = null, payload = null, }) {
+    async requestApi({ url, accessToken, method = 'GET', whichPayload = null, queryString, payload = null, }) {
         /**
          * This function returns the data from the requested URL in JSON format.
          *
@@ -84,7 +84,7 @@ export class TokenHandler {
             throw err;
         }
     }
-    async returnData(url, accessToken, method, whichPayload = null, queryString = null, payload = null) {
+    async returnData(url, accessToken, method, whichPayload = null, queryString, payload = null) {
         /**
          * Calls requestApi with the provided parameters to fetch data from the API.
          *

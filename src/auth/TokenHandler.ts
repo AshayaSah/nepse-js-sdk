@@ -7,6 +7,13 @@ const agent = new https.Agent({
   rejectUnauthorized: false, // same as Python's verify=False
 });
 
+interface QueryString {
+  page?: string;           // "0", "1", etc.
+  size?: string;           // "500", "1000", etc.
+  businessDate?: string | null;  // date in YYYY-MM-DD format or null
+  nDays?: number;          // number of days for the trading average
+}
+
 // Type for the raw response from the API (with string salts)
 interface RawTokenResponse {
   serverTime: number;
@@ -44,7 +51,7 @@ interface RequestApiOptions {
   accessToken: AccessTokenValue // Assuming accessToken is a single-item array as in the Python code
   method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH"
   whichPayload?: string | null;
-  queryString?: Record<string, string> | null;
+  queryString?: QueryString;
   payload?: any; // Flexible type for payload, can be refined based on use case
   headers?: Headers;
 }
@@ -82,7 +89,7 @@ export class TokenHandler {
     accessToken,
     method = 'GET',
     whichPayload = null,
-    queryString = null,
+    queryString,
     payload = null,
   }: RequestApiOptions): Promise<Response> {
     /**
@@ -171,7 +178,7 @@ export class TokenHandler {
     accessToken: AccessTokenValue,
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
     whichPayload: string | null = null,
-    queryString: Record<string, string> | null = null,
+    queryString: QueryString,
     payload: any = null
   ): Promise<Response> {
     /**
